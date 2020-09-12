@@ -1,5 +1,6 @@
 import requests
 from urllib.parse import urlencode
+import json
 
 
 headers = {}
@@ -11,3 +12,6 @@ def get_request(url, params):
     r = requests.get(url=url, headers=headers)
 
     return r
+
+def json_decode(j):
+    return json.loads(j)

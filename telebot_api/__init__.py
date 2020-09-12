@@ -1,6 +1,7 @@
 import json
 import time
-from telebot_api.functions import get_request
+from telebot_api.functions import get_request, json_decode
+from telebot_api.exceptions import sendMessageError, getUpdatesError
 
 
 class API:
@@ -27,9 +28,12 @@ class API:
         link = self.api_link.format(token=self.token, method='sendMessage')
 
         r = get_request(link, params)
+        j = json_decode(r.text)
 
-        return json.loads(r.text)
-
+        if j['ok'] is True:
+            return j['result']
+        else:
+            raise sendMessageError
 
     def get_updates(self, offset=100, limit=100):
         params = {}
@@ -39,8 +43,12 @@ class API:
         link = self.api_link.format(token=self.token, method='getUpdates')
 
         r = get_request(link, params)
+        j = json_decode(r.text)
 
-        return json.loads(r.text)['result']
+        if j['ok'] is True:
+            return j['result']
+        else:
+            raise getUpdatesError
 
     def process_updates(self, updates):
         update_id = 0
