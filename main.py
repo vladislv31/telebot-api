@@ -1,4 +1,4 @@
-from telebot_api import API
+from telebot_api import API, keyboards
 import config
 
 
@@ -14,6 +14,20 @@ def start_message(m):
 def start_message(m):
     cid = m['chat']['id']
     bot.send_message(cid, 'info message')
+
+@bot.message_handler('/keyb')
+def start_message(m):
+    cid = m['chat']['id']
+    keyboard = keyboards.ReplyKeyboardMarkup(resize=True)
+    btn = keyboards.KeyboardButton('hello')
+    keyboard.row([btn])
+    bot.send_message(cid, 'info message', reply_markup=keyboard)
+
+@bot.message_handler('/hide')
+def start_message(m):
+    cid = m['chat']['id']
+    keyboard = keyboards.ReplyKeyboardRemove()
+    bot.send_message(cid, 'info message', reply_markup=keyboard)
 
 bot.watching()
 

@@ -19,11 +19,13 @@ class API:
 
         return wrapper
 
-    def send_message(self, chat_id, text):
+    def send_message(self, chat_id, text, reply_markup=None):
         params = {}
 
         params['chat_id'] = chat_id
         params['text'] = text
+        if reply_markup:
+            params['reply_markup'] = reply_markup.toJSON()
 
         link = self.api_link.format(token=self.token, method='sendMessage')
 
@@ -66,9 +68,12 @@ class API:
         update_id = -1
 
         while True:
-            updates = self.get_updates(offset=update_id)
-            if updates:
-                update_id = self.process_updates(updates) + 1
+            try:
+                updates = self.get_updates(offset=update_id)
+                if updates:
+                    update_id = self.process_updates(updates) + 1
+            except KeyboardInterrupt:
+                exit()
 
 
 

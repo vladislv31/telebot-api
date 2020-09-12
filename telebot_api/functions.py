@@ -15,3 +15,6 @@ def get_request(url, params):
 
 def json_decode(j):
     return json.loads(j)
+
+def json_encode(o):
+    return json.dumps(o)
