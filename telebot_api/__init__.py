@@ -1,12 +1,11 @@
-import requests
-from urllib.parse import urlencode
 import json
 import time
+from telebot_api.functions import get_request
 
 
 class API:
 
-    api_link = 'https://api.telegram.org/bot{token}/{method}?'
+    api_link = 'https://api.telegram.org/bot{token}/{method}'
     handlers = {}
     
     def __init__(self, token):
@@ -21,47 +20,47 @@ class API:
 
     def send_message(self, chat_id, text):
         params = {}
+
         params['chat_id'] = chat_id
         params['text'] = text
 
-        link = self.api_link.format(token=self.token, method='sendMessage') + urlencode(params)
+        link = self.api_link.format(token=self.token, method='sendMessage')
 
-        headers = {}
-        headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+        r = get_request(link, params)
 
-        requests.get(url=link, headers=headers)
+        return json.loads(r.text)
+
 
     def get_updates(self, offset=100, limit=100):
         params = {}
         params['offset'] = offset
         params['limit'] = limit
 
-        link = self.api_link.format(token=self.token, method='getUpdates') + urlencode(params)
+        link = self.api_link.format(token=self.token, method='getUpdates')
 
-        headers = {}
-        headers['user-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
-
-        r = requests.get(url=link, headers=headers)
+        r = get_request(link, params)
 
         return json.loads(r.text)['result']
 
+    def process_updates(self, updates):
+        update_id = 0
+
+        for u in updates:
+            for text, handler in self.handlers.items():
+                if u['message']['text'] == text:
+                    handler(u['message'])
+                    break
+            update_id = u['update_id']
+
+        return update_id
 
     def watching(self):
-        last_update = self.get_updates(-1)[0]
-        update_id = last_update['update_id'] + 1 if last_update else 0
-        print(update_id)
+        update_id = -1
 
         while True:
             updates = self.get_updates(offset=update_id)
-            print(update_id)
-            print(updates)
             if updates:
-                for u in updates:
-                    for text, handler in self.handlers.items():
-                        if u['message']['text'] == text:
-                            handler(u['message'])
-                            break
-                    update_id = u['update_id'] + 1
+                update_id = self.process_updates(updates) + 1
 
 
 
