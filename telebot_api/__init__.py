@@ -19,7 +19,7 @@ class API:
 
         return wrapper
     
-    def api_command(self, command, params):
+    def api_command(self, command, params={}):
         link = self.api_link.format(token=self.token, method=command)
         r = get_request(link, params)
         return json_decode(r.text)
@@ -33,7 +33,7 @@ class API:
             params['reply_markup'] = reply_markup.toJSON()
 
         j = self.api_command('sendMessage', params)
-        
+
         if j['ok'] is True:
             return j['result']
         else:
@@ -74,8 +74,22 @@ class API:
             except KeyboardInterrupt:
                 exit()
 
-    def set_webhook():
-        pass
+    def set_webhook(self, url, cert=None):
+        params = {}
+        params['url'] = url
+
+        j = self.api_command('setWebhook', params)
+
+        return j
+
+    def remove_webhook(self):
+        j = self.api_command('deleteWebhook')
+
+        return j
+
+
+
+
 
 
 
