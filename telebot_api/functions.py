@@ -1,6 +1,8 @@
 import requests
 from urllib.parse import urlencode
 import json
+import random
+import string
 
 
 headers = {}
@@ -18,3 +20,9 @@ def json_decode(j):
 
 def json_encode(o):
     return json.dumps(o)
+
+def random_str(l):
+    symbols = string.ascii_lowercase
+    result_str = ''.join(random.choice(symbols) for i in range(l))
+
+    return result_str

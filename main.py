@@ -1,5 +1,6 @@
 from telebot_api import API, keyboards
 import config
+import time
 
 
 bot = API(config.TOKEN)
@@ -29,5 +30,9 @@ def start_message(m):
     keyboard = keyboards.ReplyKeyboardRemove()
     bot.send_message(cid, 'info message', reply_markup=keyboard)
 
-bot.watching()
 
+bot.remove_webhook()
+time.sleep(1)
+bot.set_webhook('https://514b59483915.ngrok.io')
+
+#bot.watching()

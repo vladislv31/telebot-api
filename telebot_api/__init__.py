@@ -1,7 +1,8 @@
 import json
 import time
-from telebot_api.functions import get_request, json_decode
+from telebot_api.functions import get_request, json_decode, random_str
 from telebot_api.exceptions import sendMessageError, getUpdatesError
+from webob import Request, Response
 
 
 class API:
@@ -11,6 +12,24 @@ class API:
     
     def __init__(self, token):
         self.token = token
+        self.webhook_uri = self.generate_webhook_uri()
+
+    def __call__(self, environ, start_response):
+        request = Request(environ)
+
+        current_uri = request.path
+
+        print('webhook is working')
+
+        if current_uri == self.webhook_uri:
+            j = request.body
+            update = json_decode(j)
+            self.process_updates([update])
+            
+        response = Response()
+        response.text = 'ok'
+
+        return response(environ, start_response)
 
     def message_handler(self, text):
         def wrapper(handler):
@@ -74,9 +93,12 @@ class API:
             except KeyboardInterrupt:
                 exit()
 
+    def generate_webhook_uri(self):
+        return '/' + random_str(25)
+
     def set_webhook(self, url, cert=None):
         params = {}
-        params['url'] = url
+        params['url'] = url + self.webhook_uri
 
         j = self.api_command('setWebhook', params)
 
