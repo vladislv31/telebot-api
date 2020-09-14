@@ -18,6 +18,11 @@ class API:
             return handler
 
         return wrapper
+    
+    def api_command(self, command, params):
+        link = self.api_link.format(token=self.token, method=command)
+        r = get_request(link, params)
+        return json_decode(r.text)
 
     def send_message(self, chat_id, text, reply_markup=None):
         params = {}
@@ -27,11 +32,8 @@ class API:
         if reply_markup:
             params['reply_markup'] = reply_markup.toJSON()
 
-        link = self.api_link.format(token=self.token, method='sendMessage')
-
-        r = get_request(link, params)
-        j = json_decode(r.text)
-
+        j = self.api_command('sendMessage', params)
+        
         if j['ok'] is True:
             return j['result']
         else:
@@ -42,10 +44,7 @@ class API:
         params['offset'] = offset
         params['limit'] = limit
 
-        link = self.api_link.format(token=self.token, method='getUpdates')
-
-        r = get_request(link, params)
-        j = json_decode(r.text)
+        j = self.api_command('getUpdates', params)
 
         if j['ok'] is True:
             return j['result']
@@ -74,6 +73,9 @@ class API:
                     update_id = self.process_updates(updates) + 1
             except KeyboardInterrupt:
                 exit()
+
+    def set_webhook():
+        pass
 
 
 
