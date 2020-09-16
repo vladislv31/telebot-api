@@ -1,7 +1,7 @@
 import json
 import time
 from telebot_api.functions import get_request, json_decode, random_str
-from telebot_api.exceptions import sendMessageError, getUpdatesError, setWebhookError, removeWebhookError
+from telebot_api.exceptions import sendMessageError, getUpdatesError, setWebhookError, removeWebhookError, useWebhookError
 from webob import Request, Response
 
 
@@ -13,13 +13,12 @@ class API:
     def __init__(self, token):
         self.token = token
         self.webhook_uri = self.generate_webhook_uri()
+        self.config = {}
 
     def __call__(self, environ, start_response):
         request = Request(environ)
 
         current_uri = request.path
-
-        print('webhook is working')
 
         if current_uri == self.webhook_uri:
             j = request.body
@@ -114,6 +113,15 @@ class API:
             return j['result']
         else:
             raise removeWebhookError(j['description'])
+
+    def use_webhook(self):
+        self.remove_webhook()
+        time.sleep(0.5)
+        try:
+            self.set_webhook(self.config['webhook_host'])
+        except:
+            raise useWebhookError('\'webhook_host\' key are not exists in config dict.')
+
 
 
 

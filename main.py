@@ -4,7 +4,7 @@ import time
 
 
 bot = API(config.TOKEN)
-#bot.send_message(463758574, 'test')
+bot.config['webhook_host'] = 'https://d0a1fe3048b2.ngrok.io'
 
 @bot.message_handler('/start')
 def start_message(m):
@@ -35,4 +35,6 @@ def start_message(m):
 #time.sleep(1)
 #bot.set_webhook('http://c7d51034d510.ngrok.io')
 
-bot.watching()
+bot.use_webhook()
+
+#bot.watching()

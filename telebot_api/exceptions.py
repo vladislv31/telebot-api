@@ -14,3 +14,6 @@ class setWebhookError(Error):
 
 class removeWebhookError(Error):
     pass
+
+class useWebhookError(Error):
+    pass
