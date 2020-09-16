@@ -28,7 +28,7 @@ def start_message(m):
 def start_message(m):
     cid = m['chat']['id']
     keyboard = keyboards.InlineKeyboardMarkup()
-    btn = keyboards.InlineKeyboardButton('hello')
+    btn = keyboards.InlineKeyboardButton('hello', url='https://google.com')
     keyboard.row([btn])
     bot.send_message(cid, 'info message', reply_markup=keyboard)
 
@@ -37,6 +37,29 @@ def start_message(m):
     cid = m['chat']['id']
     keyboard = keyboards.ReplyKeyboardRemove()
     bot.send_message(cid, 'info message', reply_markup=keyboard)
+
+@bot.message_handler('/parse_mode')
+def start_message(m):
+    cid = m['chat']['id']
+    reply = """*bold text*
+    _italic text_
+    [inline URL](http://www.example.com/)
+    [inline mention of a user](tg://user?id=463758574)
+    `inline fixed-width code`
+    ```
+    pre-formatted fixed-width code block
+    ```
+    ```python
+    pre-formatted fixed-width code block written in the Python programming language
+    ```"""
+    bot.send_message(cid, reply, parse_mode='MarkdownV2')
+
+@bot.message_handler('/get_id')
+def start_message(m):
+    cid = m['chat']['id']
+    bot.send_message(cid, str(cid))
+
+
 
 
 #bot.remove_webhook()

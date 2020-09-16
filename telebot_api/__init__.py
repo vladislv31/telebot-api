@@ -42,13 +42,16 @@ class API:
         r = get_request(link, params)
         return json_decode(r.text)
 
-    def send_message(self, chat_id, text, reply_markup=None):
+    def send_message(self, chat_id, text, reply_markup=None, parse_mode=None):
         params = {}
 
         params['chat_id'] = chat_id
         params['text'] = text
+
         if reply_markup:
             params['reply_markup'] = reply_markup.toJSON()
+        if parse_mode:
+            params['parse_mode'] = parse_mode
 
         j = self.api_command('sendMessage', params)
 
