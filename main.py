@@ -19,8 +19,16 @@ def start_message(m):
 @bot.message_handler('/keyb')
 def start_message(m):
     cid = m['chat']['id']
-    keyboard = keyboards.ReplyKeyboardMarkup(resize=True)
+    keyboard = keyboards.ReplyKeyboardMarkup(resize_keyboard=True)
     btn = keyboards.KeyboardButton('hello')
+    keyboard.row([btn])
+    bot.send_message(cid, 'info message', reply_markup=keyboard)
+
+@bot.message_handler('/inline')
+def start_message(m):
+    cid = m['chat']['id']
+    keyboard = keyboards.InlineKeyboardMarkup()
+    btn = keyboards.InlineKeyboardButton('hello')
     keyboard.row([btn])
     bot.send_message(cid, 'info message', reply_markup=keyboard)
 
@@ -35,6 +43,6 @@ def start_message(m):
 #time.sleep(1)
 #bot.set_webhook('http://c7d51034d510.ngrok.io')
 
-bot.use_webhook()
+#bot.use_webhook()
 
-#bot.watching()
+bot.watching()

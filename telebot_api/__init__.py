@@ -74,14 +74,17 @@ class API:
 
         for u in updates:
             for text, handler in self.handlers.items():
-                if u['message']['text'] == text:
-                    handler(u['message'])
-                    break
+                if 'message' in u.keys():
+                    if u['message']['text'] == text:
+                        handler(u['message'])
+                        break
             update_id = u['update_id']
 
         return update_id
 
     def watching(self):
+        self.remove_webhook()
+
         update_id = -1
 
         while True:
