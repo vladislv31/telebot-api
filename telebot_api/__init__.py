@@ -1,7 +1,7 @@
 import json
 import time
 from telebot_api.functions import get_request, json_decode, random_str
-from telebot_api.exceptions import sendMessageError, getUpdatesError
+from telebot_api.exceptions import sendMessageError, getUpdatesError, setWebhookError, removeWebhookError
 from webob import Request, Response
 
 
@@ -102,12 +102,18 @@ class API:
 
         j = self.api_command('setWebhook', params)
 
-        return j
+        if j['ok'] is True:
+            return j['result']
+        else:
+            raise setWebhookError
 
     def remove_webhook(self):
         j = self.api_command('deleteWebhook')
 
-        return j
+        if j['ok'] is True:
+            return j['result']
+        else:
+            raise removeWebhookError
 
 
 

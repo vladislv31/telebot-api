@@ -3,3 +3,9 @@ class sendMessageError(Exception):
 
 class getUpdatesError(Exception):
     pass
+
+class setWebhookError(Exception):
+    pass
+
+class removeWebhookError(Exception):
+    pass

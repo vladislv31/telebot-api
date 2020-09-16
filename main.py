@@ -33,6 +33,6 @@ def start_message(m):
 
 bot.remove_webhook()
 time.sleep(1)
-bot.set_webhook('https://514b59483915.ngrok.io')
+bot.set_webhook('http://c7d51034d510.ngrok.io')
 
 #bot.watching()
