@@ -56,7 +56,7 @@ class API:
         if j['ok'] is True:
             return j['result']
         else:
-            raise sendMessageError
+            raise sendMessageError(j['description'])
 
     def get_updates(self, offset=100, limit=100):
         params = {}
@@ -68,7 +68,7 @@ class API:
         if j['ok'] is True:
             return j['result']
         else:
-            raise getUpdatesError
+            raise getUpdatesError(j['description'])
 
     def process_updates(self, updates):
         update_id = 0
@@ -105,7 +105,7 @@ class API:
         if j['ok'] is True:
             return j['result']
         else:
-            raise setWebhookError
+            raise setWebhookError(j['description'])
 
     def remove_webhook(self):
         j = self.api_command('deleteWebhook')
@@ -113,7 +113,7 @@ class API:
         if j['ok'] is True:
             return j['result']
         else:
-            raise removeWebhookError
+            raise removeWebhookError(j['description'])
 
 
 

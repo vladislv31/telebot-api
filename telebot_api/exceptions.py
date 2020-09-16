@@ -1,11 +1,16 @@
-class sendMessageError(Exception):
+class Error(Exception):
+    
+    def __init__(self, message):
+        self.message = message
+
+class sendMessageError(Error):
     pass
 
-class getUpdatesError(Exception):
+class getUpdatesError(Error):
     pass
 
-class setWebhookError(Exception):
+class setWebhookError(Error):
     pass
 
-class removeWebhookError(Exception):
+class removeWebhookError(Error):
     pass

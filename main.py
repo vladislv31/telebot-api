@@ -31,8 +31,8 @@ def start_message(m):
     bot.send_message(cid, 'info message', reply_markup=keyboard)
 
 
-bot.remove_webhook()
-time.sleep(1)
-bot.set_webhook('http://c7d51034d510.ngrok.io')
+#bot.remove_webhook()
+#time.sleep(1)
+#bot.set_webhook('http://c7d51034d510.ngrok.io')
 
-#bot.watching()
+bot.watching()
