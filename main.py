@@ -58,8 +58,16 @@ def start_message(m):
 def start_message(m):
     cid = m['chat']['id']
     bot.send_message(cid, str(cid))
+    bot.register_next_step_handler(cid, print_text)
 
+def print_text(m):
+    cid = m['chat']['id']
+    bot.send_message(cid, 'how are you?')
+    bot.register_next_step_handler(cid, how_are)
 
+def how_are(m):
+    cid = m['chat']['id']
+    bot.send_message(cid, 'Cool ' + m['text'])
 
 
 #bot.remove_webhook()

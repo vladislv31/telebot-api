@@ -3,12 +3,14 @@ import time
 from telebot_api.functions import get_request, json_decode, random_str
 from telebot_api.exceptions import sendMessageError, getUpdatesError, setWebhookError, removeWebhookError, useWebhookError
 from webob import Request, Response
+import os
 
 
 class API:
 
     api_link = 'https://api.telegram.org/bot{token}/{method}'
     handlers = {}
+    next_step_handlers = {}
     
     def __init__(self, token):
         self.token = token
@@ -76,6 +78,11 @@ class API:
         update_id = 0
 
         for u in updates:
+            if 'message' in u.keys():
+                if u['message']['chat']['id'] in self.next_step_handlers.keys():
+                    handler = self.next_step_handlers[u['message']['chat']['id']]
+                    del self.next_step_handlers[u['message']['chat']['id']]
+                    handler(u['message'])
             for text, handler in self.handlers.items():
                 if 'message' in u.keys():
                     if u['message']['text'] == text:
@@ -127,6 +134,9 @@ class API:
             self.set_webhook(self.config['webhook_host'])
         except:
             raise useWebhookError('\'webhook_host\' key are not exists in config dict.')
+
+    def register_next_step_handler(self, cid, handler):
+        self.next_step_handlers[cid] = handler
 
 
 
