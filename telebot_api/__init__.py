@@ -9,13 +9,14 @@ import os
 class API:
 
     api_link = 'https://api.telegram.org/bot{token}/{method}'
-    handlers = {}
+    message_handlers = {}
     next_step_handlers = {}
     
     def __init__(self, token):
         self.token = token
         self.webhook_uri = self.generate_webhook_uri()
         self.config = {}
+
 
     def __call__(self, environ, start_response):
         request = Request(environ)
@@ -32,17 +33,20 @@ class API:
 
         return response(environ, start_response)
 
+
     def message_handler(self, text):
         def wrapper(handler):
-            self.handlers[text] = handler
+            self.message_handlers[text] = handler
             return handler
 
         return wrapper
+
     
     def api_command(self, command, params={}):
         link = self.api_link.format(token=self.token, method=command)
         r = get_request(link, params)
         return json_decode(r.text)
+
 
     def send_message(self, chat_id, text, reply_markup=None, parse_mode=None):
         params = {}
@@ -62,6 +66,7 @@ class API:
         else:
             raise sendMessageError(j['description'])
 
+
     def get_updates(self, offset=100, limit=100):
         params = {}
         params['offset'] = offset
@@ -74,23 +79,17 @@ class API:
         else:
             raise getUpdatesError(j['description'])
 
+
     def process_updates(self, updates):
         update_id = 0
 
         for u in updates:
+            self.check_next_step_handler(u)
             if 'message' in u.keys():
-                if u['message']['chat']['id'] in self.next_step_handlers.keys():
-                    handler = self.next_step_handlers[u['message']['chat']['id']]
-                    del self.next_step_handlers[u['message']['chat']['id']]
-                    handler(u['message'])
-            for text, handler in self.handlers.items():
-                if 'message' in u.keys():
-                    if u['message']['text'] == text:
-                        handler(u['message'])
-                        break
-            update_id = u['update_id']
+                update_id = self.check_message_handler(u)
 
         return update_id
+
 
     def watching(self):
         self.remove_webhook()
@@ -105,8 +104,29 @@ class API:
             except KeyboardInterrupt:
                 exit()
 
+
+    def check_next_step_handler(self, update):
+        if 'message' in update.keys():
+            chat_id = update['message']['chat']['id']
+            if chat_id in self.next_step_handlers.keys():
+                handler = self.next_step_handlers[chat_id]
+                del self.next_step_handlers[chat_id]
+                handler(update['message'])
+
+
+    def check_message_handler(self, update):
+        message = update['message']
+        for text, handler in self.message_handlers.items():
+            if 'text' in message.keys():
+                if message['text'] == text:
+                    handler(message)
+                    break
+        return update['update_id']
+
+
     def generate_webhook_uri(self):
         return '/' + random_str(25)
+
 
     def set_webhook(self, url, cert=None):
         params = {}
@@ -119,6 +139,7 @@ class API:
         else:
             raise setWebhookError(j['description'])
 
+
     def remove_webhook(self):
         j = self.api_command('deleteWebhook')
 
@@ -127,6 +148,7 @@ class API:
         else:
             raise removeWebhookError(j['description'])
 
+
     def use_webhook(self):
         self.remove_webhook()
         time.sleep(0.5)
@@ -134,6 +156,7 @@ class API:
             self.set_webhook(self.config['webhook_host'])
         except:
             raise useWebhookError('\'webhook_host\' key are not exists in config dict.')
+
 
     def register_next_step_handler(self, cid, handler):
         self.next_step_handlers[cid] = handler

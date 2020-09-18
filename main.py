@@ -28,7 +28,7 @@ def start_message(m):
 def start_message(m):
     cid = m['chat']['id']
     keyboard = keyboards.InlineKeyboardMarkup()
-    btn = keyboards.InlineKeyboardButton('hello', url='https://google.com')
+    btn = keyboards.InlineKeyboardButton('hello', callback_data='https://google.com')
     keyboard.row([btn])
     bot.send_message(cid, 'info message', reply_markup=keyboard)
 
